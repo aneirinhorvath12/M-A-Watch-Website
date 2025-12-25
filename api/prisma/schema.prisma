@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  AUTHOR
+}
+
+enum ReportType {
+  FINANCIAL
+  LEGAL
+  INTERVIEW
+}
+
+enum ReportStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum MediaKind {
+  IMAGE
+  DOCUMENT
+}
+
+enum DocumentType {
+  XLSX
+  PDF
+  OTHER
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  role         Role     @default(AUTHOR)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  reports      Report[]
+}
+
+model Report {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  title       String
+  deck        String?
+  type        ReportType
+  status      ReportStatus @default(DRAFT)
+  content     Json
+  authorId    String
+  author      User         @relation(fields: [authorId], references: [id])
+  publishedAt DateTime?
+
+  heroImageId String?
+  heroImage   Media?       @relation("HeroImage", fields: [heroImageId], references: [id])
+
+  attachments ReportMedia[]
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Media {
+  id        String       @id @default(cuid())
+  kind      MediaKind
+  url       String
+  mimeType  String?
+  fileName  String?
+  sizeBytes Int?
+  width     Int?
+  height    Int?
+  docType   DocumentType?
+  createdAt DateTime     @default(now())
+
+  heroFor      Report[]    @relation("HeroImage")
+  attachments  ReportMedia[]
+}
+
+model ReportMedia {
+  reportId String
+  mediaId  String
+  label    String?
+  order    Int      @default(0)
+
+  report   Report  @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  media    Media   @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@id([reportId, mediaId])
+  @@index([reportId, order])
+}

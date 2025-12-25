@@ -1,0 +1,23 @@
+:root{
+  --offwhite:#fafafa;
+  --offblack:#1c1c1c;
+  --blue:#347dcf;
+  --green:#0c8464;
+  --midnight:#2c4151;
+  --grey:#979797;
+
+  --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --serif: "Times New Roman", Times, serif;
+}
+
+*{ box-sizing:border-box; }
+html, body { height:100%; }
+body{
+  margin:0;
+  background: var(--offwhite);
+  color: var(--offblack);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a{ color:inherit; }
